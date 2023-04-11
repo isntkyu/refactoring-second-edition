@@ -4,7 +4,7 @@
   "description": "리팩토링에 있어서 필수적인 테스트코드",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/**/*.test.ts"
+    "test": "mocha --require ts-node/register test/**/*.spec.ts"
   },
   "author": "",
   "license": "ISC",

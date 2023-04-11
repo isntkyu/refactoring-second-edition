@@ -4,25 +4,38 @@ export type Doc = {
   name: string;
   demand: number;
   price: number;
-  producers: Producer[];
+  producers: any[];
 };
+
+function convertValue(value: any): any {
+  if (typeof value === "number") {
+    return Number(value);
+  } else if (typeof value === "string") {
+    return value;
+  } else {
+    throw new Error("Invalid value type");
+  }
+}
 
 export class Province {
   private _name: string;
   private _producers: Producer[];
+  private _totalProduction: number;
+  private _demand: number | string;
+  private _price: number;
 
   constructor(doc: Doc) {
     this._name = doc.name;
     this._producers = [];
-    this.totalProduction = 0;
-    this.demand = doc.demand;
-    this.price = doc.price;
+    this._totalProduction = 0;
+    this._demand = doc.demand;
+    this._price = doc.price;
     doc.producers.forEach((d) => this.addProducer(new Producer(this, d)));
   }
 
   addProducer(arg: Producer) {
-    this.producers.push(arg);
-    this.totalProduction += arg.production;
+    this._producers.push(arg);
+    this._totalProduction += arg.production;
   }
 
   get name(): string {
@@ -32,26 +45,26 @@ export class Province {
     return this._producers.slice();
   }
   get totalProduction(): number {
-    return this.totalProduction;
+    return this._totalProduction;
   }
   set totalProduction(arg: number) {
-    this.totalProduction = arg;
+    this._totalProduction = arg;
   }
-  get demand(): number {
-    return this.demand;
+  get demand(): number | string {
+    return this._demand;
   }
-  set demand(arg: number) {
-    this.demand = arg;
+  set demand(arg: number | string) {
+    this._demand = arg;
   }
   get price(): number {
-    return this.price;
+    return this._price;
   }
   set price(arg: number) {
-    this.price = arg;
+    this._price = arg;
   }
 
   get shortfall(): number {
-    return this.demand - this.totalProduction;
+    return convertValue(this.demand) - this.totalProduction;
   }
 
   get profit(): number {
@@ -63,11 +76,11 @@ export class Province {
   }
 
   get satisfiedDemand(): number {
-    return Math.min(this.demand, this.totalProduction);
+    return Math.min(convertValue(this.demand), this.totalProduction);
   }
 
   get demandCost(): number {
-    let remainingDemand = this.demand;
+    let remainingDemand = convertValue(this.demand);
     let result = 0;
     this.producers
       .sort((a, b) => a.cost - b.cost)
